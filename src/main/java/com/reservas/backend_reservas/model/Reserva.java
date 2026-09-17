@@ -1,6 +1,15 @@
 package com.reservas.backend_reservas.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "reservas")
 public class Reserva {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String cliente;
     private String servicio;
     private String fecha;
@@ -18,6 +27,16 @@ public class Reserva {
     }
 
     // Getters y Setters
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getCliente() {
         return cliente;
     }
