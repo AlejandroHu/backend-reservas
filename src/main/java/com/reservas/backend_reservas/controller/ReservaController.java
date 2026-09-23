@@ -3,6 +3,7 @@ package com.reservas.backend_reservas.controller;
 import com.reservas.backend_reservas.model.Reserva;
 import com.reservas.backend_reservas.repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,5 +28,30 @@ public class ReservaController {
     @GetMapping
     public List<Reserva> obtenerReservas() {
         return reservaRepository.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarReserva(@PathVariable Long id) {
+        if (!reservaRepository.existsById(id)) {
+            return ResponseEntity.notFound().build(); // Devuelve 404 si la reserva no existe
+        }
+
+        reservaRepository.deleteById(id); // Borra el registro en MySQL
+        return ResponseEntity.ok().build(); // Devuelve 200 OK
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Reserva> actualizarReserva(@PathVariable Long id, @RequestBody Reserva reservaDetalles) {
+        return reservaRepository.findById(id)
+                .map(reservaExistente -> {
+                    reservaExistente.setCliente(reservaDetalles.getCliente());
+                    reservaExistente.setServicio(reservaDetalles.getServicio());
+                    reservaExistente.setFecha(reservaDetalles.getFecha());
+                    reservaExistente.setHora(reservaDetalles.getHora());
+
+                    Reserva actualizada = reservaRepository.save(reservaExistente);
+                    return ResponseEntity.ok(actualizada);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
